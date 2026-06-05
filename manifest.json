@@ -1,0 +1,18 @@
+{
+  "short_name": "3Week Cal",
+  "name": "3Week Calendar",
+  "description": "Continuous rolling 3-week timeline mobile calendar.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "background_color": "#ffffff",
+  "theme_color": "#3562ff",
+  "display": "standalone",
+  "orientation": "portrait"
+}

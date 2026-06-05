@@ -1,0 +1,1341 @@
+/* ==========================================================================
+   3Week Calendar - Design Tokens & Stylesheet
+   ========================================================================== */
+
+:root {
+  /* Common variables */
+  --primary-color: #4F46E5;
+  --primary-hover: #3730A3;
+  --primary-light: rgba(79, 70, 229, 0.1);
+  --primary-glow: rgba(79, 70, 229, 0.3);
+  
+  --danger-color: #EF4444;
+  --danger-hover: #DC2626;
+  --danger-light: rgba(239, 68, 68, 0.1);
+  
+  /* Category Default Colors */
+  --personal-color: #FF6B6B;
+  --school-color: #2EC4B6;
+  --work-color: #4361EE;
+  --health-color: #F77F00;
+
+  /* Typography */
+  --font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Animation Speeds */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94);
+  --transition-slow: 0.5s cubic-bezier(0.1, 0.76, 0.55, 0.94);
+
+  /* Light Theme Variables (Default) */
+  --bg-primary: #F8F9FC;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  
+  --border-color: #E2E8F0;
+  --border-color-focus: #4F46E5;
+  
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
+  --shadow-md: 0 8px 24px -4px rgba(15,23,42,0.06), 0 4px 12px -2px rgba(15,23,42,0.03);
+  --shadow-lg: 0 20px 32px -6px rgba(15,23,42,0.12), 0 8px 16px -4px rgba(15,23,42,0.06);
+  --overlay-bg: rgba(15, 23, 42, 0.35);
+  
+  --card-hover-bg: #F1F5F9;
+  --selected-day-bg: rgba(79, 70, 229, 0.08);
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  --bg-primary: #090D16;
+  --bg-surface: #121824;
+  --bg-surface-elevated: #1B2332;
+  
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  
+  --border-color: #262F40;
+  --border-color-focus: #818CF8;
+  
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 24px -4px rgba(0,0,0,0.45);
+  --shadow-lg: 0 20px 32px -6px rgba(0,0,0,0.6);
+  --overlay-bg: rgba(0, 0, 0, 0.65);
+  
+  --card-hover-bg: #1B2332;
+  --selected-day-bg: rgba(129, 140, 248, 0.15);
+  
+  --primary-color: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-light: rgba(99, 102, 241, 0.15);
+  --primary-glow: rgba(99, 102, 241, 0.4);
+}
+
+/* ==========================================================================
+   Reset & Base Styles
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: #11151D;
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+input, textarea, select, button {
+  font-family: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+/* ==========================================================================
+   Device Shell (Desktop Simulation)
+   ========================================================================== */
+
+.app-device-wrapper {
+  position: relative;
+  width: 390px; /* iPhone 13 Pro layout standard */
+  height: 844px;
+  background: #000;
+  border-radius: 48px;
+  padding: 11px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 40px rgba(79, 70, 229, 0.15);
+  border: 4px solid #2D3748;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform var(--transition-normal);
+}
+
+.device-notch {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 25px;
+  background: #000;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  z-index: 999;
+}
+
+/* Screen container within the simulated device */
+.device-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-primary);
+  border-radius: 38px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive adjustment for actual mobile viewports */
+@media (max-width: 500px), (max-height: 800px) {
+  body {
+    background-color: var(--bg-primary);
+  }
+  .app-device-wrapper {
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  .device-notch {
+    display: none;
+  }
+  .device-screen {
+    border-radius: 0;
+  }
+}
+
+/* ==========================================================================
+   App Shell Layout
+   ========================================================================== */
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+/* Header styling */
+.app-header {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  padding: 44px 16px 12px 16px; /* High top padding to account for notch on devices */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 5;
+}
+
+@media (max-width: 500px) {
+  .app-header {
+    padding-top: 24px;
+  }
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--primary-color);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.header-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.header-icon-btn:hover {
+  background: var(--card-hover-bg);
+  color: var(--text-primary);
+}
+
+.header-icon-btn:active {
+  transform: scale(0.92);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Calendar Date Selector Nav */
+.header-calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-primary);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  margin-top: 4px;
+}
+
+.date-range-text {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.nav-arrow-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.nav-arrow-btn:active {
+  transform: scale(0.9);
+}
+
+/* Weekday header bar */
+.weekdays-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  padding: 8px 10px;
+  text-align: center;
+  z-index: 4;
+}
+
+.weekday-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.weekday-label.weekend {
+  color: var(--danger-color);
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Continuous 3-Week Calendar Viewport & Swipe Mechanics
+   ========================================================================== */
+
+.calendar-viewport {
+  position: relative;
+  background: var(--bg-surface);
+  height: 280px; /* Fixed height for 3 rows */
+  border-bottom: 1px solid var(--border-color);
+  overflow: hidden;
+  z-index: 3;
+}
+
+.calendar-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.calendar-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr); /* Exactly 3 weeks */
+  grid-template-columns: repeat(7, 1fr); /* 7 Days per week */
+  padding: 2px 10px;
+  background: var(--bg-surface);
+  /* Touch action manipulation for custom swipe script */
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.calendar-grid:active {
+  cursor: grabbing;
+}
+
+/* Horizontal swipe transitions */
+.active-grid {
+  z-index: 2;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.incoming-grid {
+  z-index: 1;
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+/* Transition classes added via Javascript */
+.transitioning {
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
+}
+
+.slide-left-out {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.slide-left-in {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.slide-right-out {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.slide-right-in {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Date Card styles */
+.date-card {
+  position: relative;
+  border-radius: var(--radius-sm);
+  margin: 3px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-surface);
+  border: 1px solid transparent;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.date-card:hover {
+  background: var(--card-hover-bg);
+}
+
+.date-card.different-month {
+  opacity: 0.45;
+}
+
+.date-card.selected {
+  background: var(--selected-day-bg);
+  border-color: var(--primary-light);
+}
+
+/* Day Number & Today indicator */
+.date-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date-number {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+/* Month badge inside date card when Crossing month boundaries */
+.month-badge {
+  font-size: 8px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: -0.2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date-card.today .date-number {
+  background: var(--primary-color);
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px var(--primary-glow);
+}
+
+/* Event micro-indicators inside cells */
+.date-card-events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.cell-event-pill {
+  font-size: 8.5px;
+  font-weight: 600;
+  padding: 1px 3px;
+  border-radius: 3px;
+  color: #FFFFFF;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.cell-more-indicator {
+  font-size: 8px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 1px;
+}
+
+/* Instructions Overlay */
+.swipe-overlay-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: #FFFFFF;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.swipe-overlay-info.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.swipe-hand-animation {
+  width: 48px;
+  height: 48px;
+  animation: handSwipe 1.8s infinite ease-in-out;
+}
+
+@keyframes handSwipe {
+  0% { transform: translateX(30px) scale(1); opacity: 0; }
+  15% { opacity: 1; }
+  50% { transform: translateX(-30px) scale(0.9); }
+  85% { opacity: 1; }
+  100% { transform: translateX(-30px) scale(0.9); opacity: 0; }
+}
+
+/* ==========================================================================
+   Selected Day Event List Section
+   ========================================================================== */
+
+.selected-day-panel {
+  flex-grow: 1;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  overflow-y: auto;
+  gap: 12px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.selected-day-heading {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.selected-day-sub {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  color: var(--primary-color);
+  text-transform: uppercase;
+}
+
+/* Events List Wrapper */
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Event List Card */
+.event-item-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  border-left: 5px solid transparent;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.event-item-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.event-item-card:active {
+  transform: scale(0.98);
+}
+
+/* Color left borders */
+.event-item-card.cat-personal { border-left-color: var(--personal-color); }
+.event-item-card.cat-school { border-left-color: var(--school-color); }
+.event-item-card.cat-work { border-left-color: var(--work-color); }
+.event-item-card.cat-health { border-left-color: var(--health-color); }
+
+.event-item-time {
+  min-width: 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+.time-start {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.time-type {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.event-item-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.event-item-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-item-notes {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Empty State Placeholder */
+.empty-events-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  gap: 8px;
+}
+
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  opacity: 0.4;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.empty-events-placeholder h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.empty-events-placeholder p {
+  font-size: 12px;
+  max-width: 200px;
+}
+
+/* ==========================================================================
+   Floating Action Button (FAB)
+   ========================================================================== */
+
+.fab-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--primary-color);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px var(--primary-glow);
+  z-index: 8;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.fab-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.fab-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.fab-btn .icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* ==========================================================================
+   Modals & Bottom Sheets
+   ========================================================================== */
+
+/* Overlay backdrop */
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9;
+  transition: opacity var(--transition-normal);
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Bottom Sheet */
+.bottom-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-height: 82%;
+  background: var(--bg-surface-elevated);
+  border-radius: 28px 28px 0 0;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(100%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-normal), visibility var(--transition-normal);
+  padding: 8px 18px 28px 18px;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.bottom-sheet.open {
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.sheet-drag-handle {
+  width: 36px;
+  height: 5px;
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+  margin: 4px auto 12px auto;
+  flex-shrink: 0;
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.sheet-header h3 {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.sheet-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: background var(--transition-fast);
+}
+
+.sheet-close-btn:hover {
+  background: var(--card-hover-bg);
+}
+
+/* Bottom Sheet Forms & Inputs */
+.sheet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-input {
+  background: var(--bg-primary);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-size: 14px;
+  outline: none;
+  font-weight: 500;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.form-input:focus {
+  border-color: var(--border-color-focus);
+  background: var(--bg-surface);
+}
+
+.form-textarea {
+  resize: none;
+  height: 80px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.checkbox-row input {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  accent-color: var(--primary-color);
+}
+
+/* Category Selection Horizontal Scroll Chips */
+.category-chips-wrapper {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  scrollbar-width: none;
+}
+
+.category-chips-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.chip-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.chip-container input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.chip {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 700;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+/* Specific styling for selected chips */
+.chip-personal { --c-color: var(--personal-color); }
+.chip-school { --c-color: var(--school-color); }
+.chip-work { --c-color: var(--work-color); }
+.chip-health { --c-color: var(--health-color); }
+
+.chip-container input:checked + .chip {
+  background: var(--c-color);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+.chip-container:hover .chip {
+  filter: brightness(0.95);
+}
+
+/* Form Buttons */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.form-btn {
+  flex-grow: 1;
+  padding: 14px;
+  font-size: 14.5px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--card-hover-bg);
+}
+
+.btn-danger {
+  background: var(--danger-light);
+  color: var(--danger-color);
+}
+
+.btn-danger:hover {
+  background: var(--danger-color);
+  color: #FFFFFF;
+}
+
+.form-btn:active {
+  transform: scale(0.97);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.error-msg {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--danger-color);
+  margin-top: -2px;
+  display: none;
+}
+
+/* ==========================================================================
+   Event Detail View Modal
+   ========================================================================== */
+
+.badge {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+
+.badge.personal { background-color: var(--personal-color); }
+.badge.school { background-color: var(--school-color); }
+.badge.work { background-color: var(--work-color); }
+.badge.health { background-color: var(--health-color); }
+
+.detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.detail-event-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.4px;
+}
+
+.detail-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.detail-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-notes-content {
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  min-height: 60px;
+  white-space: pre-line;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* ==========================================================================
+   Settings Screen Bottom Sheet
+   ========================================================================== */
+
+.sheet-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.settings-section-divider {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-option-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option-info {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+}
+
+.option-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.option-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+/* Settings Select Field */
+.settings-select {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+}
+
+/* Settings Actions Buttons */
+.btn-group-row {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-action-btn {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background var(--transition-fast);
+}
+
+.settings-action-btn:hover {
+  background: var(--card-hover-bg);
+}
+
+.settings-action-btn.secondary {
+  background: var(--primary-light);
+  color: var(--primary-color);
+  border-color: transparent;
+}
+
+.settings-action-btn.secondary:hover {
+  filter: brightness(0.95);
+}
+
+.settings-action-btn.danger {
+  background: var(--danger-light);
+  color: var(--danger-color);
+  border-color: transparent;
+}
+
+.settings-action-btn.danger:hover {
+  background: var(--danger-color);
+  color: #FFFFFF;
+}
+
+.action-btn-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Theme Toggle custom switch */
+.theme-toggle-control {
+  position: relative;
+  width: 60px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+  transition: background var(--transition-normal);
+}
+
+.toggle-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: opacity var(--transition-normal);
+}
+
+.icon-sun-el {
+  color: #F59E0B;
+}
+
+.icon-moon-el {
+  color: #94A3B8;
+  opacity: 0.5;
+}
+
+.toggle-slider {
+  position: absolute;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform var(--transition-normal);
+  z-index: 1;
+}
+
+/* Toggle Dark theme state */
+[data-theme="dark"] .theme-toggle-control {
+  background: #1E293B;
+}
+
+[data-theme="dark"] .toggle-slider {
+  transform: translateX(28px);
+  background: #111827;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .icon-sun-el {
+  opacity: 0.5;
+  color: #64748B;
+}
+
+[data-theme="dark"] .icon-moon-el {
+  opacity: 1;
+  color: #818CF8;
+}
+
+/* Category Custom Color Pickers */
+.color-pickers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  background: var(--bg-primary);
+  padding: 10px;
+  border-radius: var(--radius-md);
+}
+
+.color-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  position: relative;
+  cursor: pointer;
+}
+
+.color-picker-item label {
+  cursor: pointer;
+}
+
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+  display: inline-block;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition-fast);
+}
+
+.color-picker-item input[type="color"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.settings-app-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 8px;
+}
+
+.info-icon {
+  width: 12px;
+  height: 12px;
+}
+
+/* Tooltips (Desktop fallback for actions) */
+.tooltip {
+  position: relative;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  bottom: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #334155;
+  color: #FFFFFF;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.2s;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (max-width: 500px) {
+  .tooltip-text {
+    display: none;
+  }
+}
